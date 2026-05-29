@@ -5,10 +5,7 @@
   font-style: normal;
 }
 
-html {
-  /* Заглушка для самого низа, чтобы не было белого экрана до загрузки картинки */
-  background-color: #fcfbfa; 
-}
+
 
 body {
   margin: 0;
@@ -23,18 +20,20 @@ body {
 /* ФИКС ИСКЛЮЧИТЕЛЬНО ДЛЯ ТЕЛЕФОНОВ (до 767px)          */
 /* Выносим фон на фиксированный слой, уходя от бага     */
 /* ==================================================== */
+/* Скрываем фоновый div на десктопах */
+.mobile-fixed-bg {
+  display: none;
+}
+
+/* Показываем и фиксируем только на мобильных */
 @media (max-width: 767px) {
-  body {
-    position: relative;
-    z-index: 0;
-  }
-  body::before {
-    content: "";
+  .mobile-fixed-bg {
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     z-index: -1;
     background-image: url("images/bg.jpg");
     background-repeat: no-repeat;
