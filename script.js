@@ -1,58 +1,65 @@
-const daysEl = document.getElementById("days");
-const hoursEl = document.getElementById("hours");
-const minutesEl = document.getElementById("minutes");
-const secondsEl = document.getElementById("seconds");
+// 1. ТАЙМЕР
+function startCountdown() {
+  const weddingDate = new Date("July 31, 2026 11:00:00").getTime();
+  
+  setInterval(() => {
+    const now = new Date().getTime();
+    const distance = weddingDate - now;
 
-const weddingDatePerm = new Date("2026-07-31T11:00:00+05:00");
-
-function pad(value) {
-  return String(value).padStart(2, "0");
+    document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+    document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+  }, 1000);
 }
 
-function setCountdownValues(days, hours, minutes, seconds) {
-  daysEl.textContent = pad(days);
-  hoursEl.textContent = pad(hours);
-  minutesEl.textContent = pad(minutes);
-  secondsEl.textContent = pad(seconds);
-}
+// 2. АНИМАЦИЯ ПОЯВЛЕНИЯ
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+    }
+  });
+}, { threshold: 0.1 });
 
-function updateCountdown() {
-  const nowUtcMs = Date.now();
-  const targetUtcMs = weddingDatePerm.getTime();
-  const diffMs = targetUtcMs - nowUtcMs;
+document.querySelectorAll('.reveal-section').forEach(section => {
+  observer.observe(section);
+});
 
-  if (diffMs <= 0) {
-    setCountdownValues(0, 0, 0, 0);
-    return;
-  }
+// Запуск таймера при загрузке
+startCountdown();
 
-  const totalSeconds = Math.floor(diffMs / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+// ЛОГИКА ДИНАМИЧЕСКИХ ПОЛЕЙ АНКЕТЫ (Приду / Не приду)
+const attendanceToggles = document.querySelectorAll('.attendance-toggle');
+const extraFields = document.getElementById('extra-fields');
 
-  setCountdownValues(days, hours, minutes, seconds);
-}
-
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-const revealSections = document.querySelectorAll(".reveal-section");
-
-if (revealSections.length > 0) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
+if (attendanceToggles.length > 0 && extraFields) {
+  attendanceToggles.forEach(toggle => {
+    toggle.addEventListener('change', function() {
+      if (this.value === 'Я приду') {
+        // Показываем блок сообщения и алкоголя
+        extraFields.classList.remove('hidden');
+        
+        // Делаем выбор алкоголя обязательным
+        const alcoholInputs = extraFields.querySelectorAll('input[type="radio"]');
+        if (alcoholInputs.length > 0) {
+          alcoholInputs[0].setAttribute('required', 'required');
         }
-      });
-    },
-    { threshold: 0.2 }
-  );
-
-  revealSections.forEach((section) => observer.observe(section));
+      } else {
+        // Прячем блок
+        extraFields.classList.add('hidden');
+        
+        // Сбрасываем обязательность и выбор
+        const alcoholInputs = extraFields.querySelectorAll('input[type="radio"]');
+        alcoholInputs.forEach(input => {
+          input.removeAttribute('required');
+          input.checked = false; 
+        });
+        const textarea = extraFields.querySelector('textarea');
+        if (textarea) textarea.value = ''; 
+      }
+    });
+  });
 }
 
 // ОТПРАВКА ФОРМЫ БЕЗ ПЕРЕЗАГРУЗКИ СТРАНИЦЫ
@@ -61,19 +68,16 @@ const rsvpContainer = document.querySelector('.rsvp-panel');
 
 if (weddingForm && rsvpContainer) {
   weddingForm.addEventListener('submit', async function(event) {
-    event.preventDefault(); // Это главное! Блокирует открытие окна Formspree
+    event.preventDefault(); // Блокируем переход на сайт Formspree
     
-    // Находим кнопку и меняем текст, чтобы гость видел, что процесс пошел
     const submitBtn = weddingForm.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Отправка...';
     submitBtn.disabled = true;
 
-    // Собираем данные из полей анкеты
     const formData = new FormData(weddingForm);
     
     try {
-      // Отправляем данные на Formspree в фоновом режиме
       const response = await fetch(weddingForm.action, {
         method: weddingForm.method,
         body: formData,
@@ -83,12 +87,12 @@ if (weddingForm && rsvpContainer) {
       });
       
       if (response.ok) {
-        // Если всё ушло, плавно заменяем анкету на красивое спасибо
+        // Плавно заменяем анкету на текст благодарности
         rsvpContainer.innerHTML = `
           <div class="text-center py-8 animate-fade-in">
             <h4 class="heading-font text-2xl md:text-5xl text-[#7b866f]">СПАСИБО!</h4>
             <p class="mt-4 text-lg md:text-[2.2rem] decorative-script leading-relaxed text-stone-700">
-              Ваша анкета успешно доставлена.<br>
+              Ваш ответ успешно доставлен.<br>
               Олег и Екатерина очень ждут вас!
             </p>
           </div>
@@ -97,8 +101,7 @@ if (weddingForm && rsvpContainer) {
         throw new Error('Ошибка при отправке');
       }
     } catch (error) {
-      // Если что-то сломалось (например, у гостя пропал интернет)
-      alert('Произошла ошибка. Пожалуйста, попробуйте еще раз.');
+      alert('Произошла ошибка. Пожалуйста, проверьте интернет и попробуйте еще раз.');
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     }
