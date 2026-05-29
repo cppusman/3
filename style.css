@@ -5,52 +5,45 @@
   font-style: normal;
 }
 
-/* ==================================================== */
-/* БАЗА */
-/* ==================================================== */
+html {
+  /* Заглушка для самого низа, чтобы не было белого экрана до загрузки картинки */
+  background-color: #fcfbfa; 
+}
 
-html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
-  overflow-x: hidden;
-}
-
-html {
-  background-color: #fcfbfa;
-}
-
-body {
   font-family: "Cormorant Garamond", serif;
   scroll-behavior: smooth;
-  background-color: transparent !important;
-  position: relative;
+  /* ИМЕННО ЗДЕСЬ БЫЛА ПРОБЛЕМА. Делаем тело сайта прозрачным: */
+  background-color: transparent !important; 
 }
 
 /* ==================================================== */
-/* СТАБИЛЬНЫЙ ФОН ДЛЯ МОБИЛЬНЫХ */
+/* ФИКС ИСКЛЮЧИТЕЛЬНО ДЛЯ ТЕЛЕФОНОВ (до 767px)          */
+/* Выносим фон на фиксированный слой, уходя от бага     */
 /* ==================================================== */
-
-.mobile-fixed-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-
-  background-image: url("images/bg.jpg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-
-  transform: translateZ(0);
-  will-change: transform;
+@media (max-width: 767px) {
+  body {
+    position: relative;
+    z-index: 0;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-image: url("images/bg.jpg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+  }
 }
 
-/* ==================================================== */
-/* УБИРАЕМ СТАРЫЕ ФОНЫ */
-/* ==================================================== */
-
+/* Отключаем все старые фоны секций, чтобы они не перекрывали общую картинку */
 .screen-bg,
 .panel-bg-1,
 .panel-bg-2,
@@ -59,10 +52,6 @@ body {
   background-image: none !important;
   background-color: transparent !important;
 }
-
-/* ==================================================== */
-/* ШРИФТЫ */
-/* ==================================================== */
 
 .heading-font {
   font-family: "Forum", serif;
@@ -83,37 +72,25 @@ p.decorative-script {
   font-family: "Forum", serif;
 }
 
-/* ==================================================== */
-/* ОСНОВНАЯ СТРУКТУРА */
-/* ==================================================== */
-
 .snap-wrapper {
   min-height: 100vh;
 }
 
+/* Базовый слайд */
 .screen-slide {
   width: 100%;
   min-height: 100vh;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   overflow: visible;
-
   padding: 3rem 1rem;
-
   position: relative;
   isolation: isolate;
-
   opacity: 0;
   transform: translateY(40px);
-
-  transition:
-    opacity 0.75s ease,
-    transform 0.75s ease;
-
+  transition: opacity 0.75s ease, transform 0.75s ease;
   background-color: transparent;
 }
 
@@ -126,103 +103,74 @@ p.decorative-script {
   transform: translateY(0);
 }
 
-/* ==================================================== */
-/* КАРТОЧКИ */
-/* ==================================================== */
-
+/* Мобильная карточка-плашка */
 .mobile-card {
   width: 100%;
   background: transparent;
-
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Прозрачные подложки для текста (чтобы читалось на фоне) */
 .mobile-card-inner {
   width: 100%;
   position: relative;
   z-index: 2;
-
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
   border-radius: 28px;
   padding: 2rem 1.4rem;
-
-  border: 1px solid rgba(255, 255, 255, 0.5);
-
-  background: rgba(255, 255, 255, 0.72);
-
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
-
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .content-shell {
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 28px;
   padding: 2rem 1rem;
-
-  border: 1px solid rgba(255, 255, 255, 0.4);
-
-  background: rgba(255, 255, 255, 0.72);
-
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
-
-/* ==================================================== */
-/* ТАЙМЕР */
-/* ==================================================== */
 
 .countdown-top {
   background: rgba(123, 142, 112, 0.15);
-  border: 1px solid rgba(123, 142, 112, 0.2);
-
   backdrop-filter: blur(2px);
+  border: 1px solid rgba(123, 142, 112, 0.2);
 }
 
 .timer-box-olive {
   background: #7b8e70;
-
+  box-shadow: 0 4px 12px rgba(123, 142, 112, 0.2);
   border-radius: 1rem;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   min-height: 80px;
   padding: 10px;
-
-  box-shadow: 0 4px 12px rgba(123, 142, 112, 0.2);
 }
 
+/* Мобильные размеры таймера */
 .timer-value {
   font-family: 'Miama Nueva', cursive;
-  font-weight: normal;
-
-  font-size: 2.2rem;
-  line-height: 1;
-
-  color: #ffffff;
-
   min-width: 2ch;
-
+  line-height: 1;
+  font-weight: normal;
+  color: #ffffff;
   font-variant-numeric: tabular-nums;
+  font-size: 2.2rem;
 }
 
-.timer-label {font-family: 'Miama Nueva', cursive;
-
+.timer-label {
+  font-family: 'Miama Nueva', cursive;
   margin-top: -0.2rem;
-
-  font-size: 1rem;
   letter-spacing: 0.05em;
-
   color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
 }
-
-/* ==================================================== */
-/* ФОРМЫ */
-/* ==================================================== */
 
 .radio-compact {
   width: 1.2rem;
@@ -231,53 +179,38 @@ p.decorative-script {
 
 .accent-btn {
   background-color: #7b8e70;
-
   font-family: "Forum", serif;
-  font-size: 1.2rem;
-
   transition: all 0.25s ease;
+  font-size: 1.2rem;
 }
 
 .accent-btn:hover {
   background-color: #6b7f61;
   transform: translateY(-1px);
 }
-
 .rsvp-panel {
-  background: rgba(255, 255, 255, 0.82) !important;
-
+  background: rgba(255, 255, 255, 0.8) !important;
   border: 1px solid rgba(123, 142, 112, 0.25);
 }
 
 .alcohol-block {
-  padding: 1rem;
-
-  border-radius: 1rem;
-
   background: rgba(244, 247, 241, 0.85);
-
   border: 1px solid rgba(123, 142, 112, 0.2);
+  border-radius: 1rem;
+  padding: 1rem;
 }
 
-/* ==================================================== */
-/* ДЕСКТОП */
-/* ==================================================== */
-
-@media (min-width: 768px) and (hover: hover) {
-
+/* ========== ДЕСКТОПНЫЕ ДОПОЛНЕНИЯ (шире 768px) ========== */
+@media (min-width: 768px) {
+  
+  /* Возвращаем твои настройки фона для ПК прямо в body */
   body {
     background-image: url("images/flower-top.jpg");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     background-attachment: fixed;
-
-    background-color: #fcfbfa !important;
-  }
-
-  /* Мобильный fixed фон выключаем */
-  .mobile-fixed-bg {
-    display: none;
+    background-color: #fcfbfa !important; /* На ПК возвращаем цвет */
   }
 
   .screen-slide {
@@ -291,26 +224,21 @@ p.decorative-script {
 
   .mobile-card-inner {
     padding: 3rem 4rem;
-
-    border: none;
+    background: rgba(252, 251, 250, 0.4);
     border-radius: 0;
-
-    background: rgba(252, 251, 250, 0.42);
-
+    border: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
   }
 
   .content-shell {
     padding: 3rem;
-
-    background: rgba(252, 251, 250, 0.42);
+    background: rgba(252, 251, 250, 0.4);
   }
 
   .timer-value {
     font-size: 3.5rem;
   }
-
+  
   .timer-label {
     font-size: 1.3rem;
   }
@@ -319,7 +247,7 @@ p.decorative-script {
     width: 1.4rem;
     height: 1.4rem;
   }
-
+  
   .accent-btn {
     font-size: inherit;
   }
