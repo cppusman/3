@@ -5,12 +5,18 @@
   font-style: normal;
 }
 
-html, body {
+html {
+  /* Заглушка для самого низа, чтобы не было белого экрана до загрузки картинки */
+  background-color: #fcfbfa; 
+}
+
+body {
   margin: 0;
   padding: 0;
   font-family: "Cormorant Garamond", serif;
   scroll-behavior: smooth;
-  background-color: #fcfbfa;
+  /* ИМЕННО ЗДЕСЬ БЫЛА ПРОБЛЕМА. Делаем тело сайта прозрачным: */
+  background-color: transparent !important; 
 }
 
 /* ==================================================== */
@@ -79,7 +85,7 @@ p.decorative-script {
   justify-content: center;
   align-items: center;
   overflow: visible;
-  padding: 3rem 1rem; /* Сразу ставим мобильные отступы */
+  padding: 3rem 1rem;
   position: relative;
   isolation: isolate;
   opacity: 0;
@@ -113,8 +119,6 @@ p.decorative-script {
   z-index: 2;
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
-  
-  /* Мобильные настройки подложки */
   border-radius: 28px;
   padding: 2rem 1.4rem;
   background: rgba(255, 255, 255, 0.7);
@@ -124,8 +128,6 @@ p.decorative-script {
 
 .content-shell {
   border: 1px solid rgba(255, 255, 255, 0.4);
-  
-  /* Мобильные настройки оболочки */
   border-radius: 28px;
   padding: 2rem 1rem;
   background: rgba(255, 255, 255, 0.7);
@@ -186,7 +188,6 @@ p.decorative-script {
   background-color: #6b7f61;
   transform: translateY(-1px);
 }
-
 .rsvp-panel {
   background: rgba(255, 255, 255, 0.8) !important;
   border: 1px solid rgba(123, 142, 112, 0.25);
@@ -209,6 +210,7 @@ p.decorative-script {
     background-position: center center;
     background-size: cover;
     background-attachment: fixed;
+    background-color: #fcfbfa !important; /* На ПК возвращаем цвет */
   }
 
   .screen-slide {
