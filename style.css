@@ -26,7 +26,7 @@ body {
 @media (max-width: 767px) {
   body {
     position: relative;
-    z-index: 1;
+    z-index: 0;
   }
   body::before {
     content: "";
@@ -35,7 +35,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: -1;
     background-image: url("images/bg.jpg");
     background-repeat: no-repeat;
     background-position: center center;
